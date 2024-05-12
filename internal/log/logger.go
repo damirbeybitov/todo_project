@@ -20,6 +20,6 @@ func init() {
 		log.Fatalf("failed to open error log file: %v", err)
 	}
 
-	InfoLogger = log.New(infoFile, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
-	ErrorLogger = log.New(errorFile, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
+	InfoLogger = log.New(infoFile, "INFO: ", log.Ldate|log.Ltime|log.Llongfile)
+	ErrorLogger = log.New(errorFile, "ERROR: ", log.Ldate|log.Ltime|log.Llongfile)
 }

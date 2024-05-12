@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/damirbeybitov/todo_project/internal/log"
 	authPB "github.com/damirbeybitov/todo_project/proto/auth"
@@ -10,11 +11,12 @@ import (
 // AuthService представляет сервис аутентификации.
 type AuthService struct {
 	authPB.UnimplementedAuthServiceServer
+	database *sql.DB
 }
 
 // NewAuthService создает новый экземпляр AuthService.
-func NewAuthService() authPB.AuthServiceServer {
-	return &AuthService{}
+func NewAuthService(db *sql.DB) authPB.AuthServiceServer {
+	return &AuthService{database: db}
 }
 
 // Authenticate реализует метод аутентификации в рамках интерфейса AuthServiceServer.

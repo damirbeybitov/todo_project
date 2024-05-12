@@ -1,2 +1,16 @@
 INFO: 2024/05/12 18:23:08 service.go:19: Registering user with username: example, email: example@example.com
 INFO: 2024/05/12 18:23:08 service.go:29: Getting user profile for user ID: 123
+INFO: 2024/05/12 21:26:07 C:/yarlyki/coding/go/todo_project/internal/user/service.go:19: Registering user with username: example, email: example@example.com
+INFO: 2024/05/12 21:26:07 C:/yarlyki/coding/go/todo_project/internal/user/service.go:29: Getting user profile for user ID: 123
+INFO: 2024/05/12 22:06:51 C:/yarlyki/coding/go/todo_project/cmd/user/main.go:30: User service is running on port 50051
+INFO: 2024/05/12 22:08:24 C:/yarlyki/coding/go/todo_project/internal/user/service.go:22: Registering user with username: damir, email: damir@example.com
+INFO: 2024/05/12 22:09:28 C:/yarlyki/coding/go/todo_project/cmd/user/main.go:30: User service is running on port 50051
+INFO: 2024/05/12 22:09:40 C:/yarlyki/coding/go/todo_project/internal/user/service.go:22: Registering user with username: damir, email: damir@example.com
+INFO: 2024/05/12 22:10:13 C:/yarlyki/coding/go/todo_project/cmd/user/main.go:30: User service is running on port 50051
+INFO: 2024/05/12 22:10:23 C:/yarlyki/coding/go/todo_project/internal/user/service.go:22: Registering user with username: damir, email: damir@example.com
+INFO: 2024/05/12 22:10:23 C:/yarlyki/coding/go/todo_project/internal/user/service.go:66: User registered successfully with ID: 1
+INFO: 2024/05/12 22:11:05 C:/yarlyki/coding/go/todo_project/internal/user/service.go:22: Registering user with username: damir, email: damir@example.com
+INFO: 2024/05/12 22:12:16 C:/yarlyki/coding/go/todo_project/cmd/user/main.go:30: User service is running on port 50051
+INFO: 2024/05/12 22:12:25 C:/yarlyki/coding/go/todo_project/internal/user/service.go:22: Registering user with username: damir, email: damir@example.com
+INFO: 2024/05/12 22:19:56 C:/yarlyki/coding/go/todo_project/cmd/user/main.go:30: User service is running on port 50051
+INFO: 2024/05/12 22:20:05 C:/yarlyki/coding/go/todo_project/internal/user/service.go:75: Getting user profile for user ID: 123
