@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option go_package = "github.com/damirbeybitov/todo_project/proto/auth";
+
+// Сообщение для запроса аутентификации
+message AuthenticateRequest {
+  string username = 1;
+  string password = 2;
+}
+
+// Ответ на запрос аутентификации
+message AuthenticateResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+}
+
+// Сообщение для запроса обновления токена
+message RefreshTokenRequest {
+  string refresh_token = 1;
+}
+
+// Ответ на запрос обновления токена
+message RefreshTokenResponse {
+  string access_token = 1;
+}
+
+// Сервис для аутентификации
+service AuthService {
+  rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse);
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
+}

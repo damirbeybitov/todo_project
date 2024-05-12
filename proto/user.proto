@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+option go_package = "github.com/damirbeybitov/todo_project/proto/user";
+
+// Сообщение для представления пользователя
+message User {
+  string id = 1;
+  string username = 2;
+  string email = 3;
+  string password = 4;
+}
+
+// Сообщение для запроса регистрации пользователя
+message RegisterUserRequest {
+  string username = 1;
+  string email = 2;
+  string password = 3;
+}
+
+// Ответ на запрос регистрации пользователя
+message RegisterUserResponse {
+  string id = 1;
+}
+
+// Сообщение для запроса получения профиля пользователя
+message GetUserProfileRequest {
+  string id = 1;
+}
+
+// Ответ на запрос получения профиля пользователя
+message GetUserProfileResponse {
+  User user = 1;
+}
+
+// Сервис для управления пользователями
+service UserService {
+  rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
+  rpc GetUserProfile(GetUserProfileRequest) returns (GetUserProfileResponse);
+}

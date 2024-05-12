@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package task;
+option go_package = "github.com/damirbeybitov/todo_project/proto/task";
 
 // Сообщение для представления задачи
 message Task {
