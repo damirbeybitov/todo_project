@@ -10,13 +10,13 @@ import (
 
 // AuthService представляет сервис аутентификации.
 type AuthService struct {
+	db *sql.DB
 	authPB.UnimplementedAuthServiceServer
-	database *sql.DB
 }
 
 // NewAuthService создает новый экземпляр AuthService.
 func NewAuthService(db *sql.DB) authPB.AuthServiceServer {
-	return &AuthService{database: db}
+	return &AuthService{db: db}
 }
 
 // Authenticate реализует метод аутентификации в рамках интерфейса AuthServiceServer.

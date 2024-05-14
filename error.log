@@ -3,3 +3,4 @@ ERROR: 2024/05/12 22:08:24 C:/yarlyki/coding/go/todo_project/internal/user/servi
 ERROR: 2024/05/12 22:09:40 C:/yarlyki/coding/go/todo_project/internal/user/service.go:49: Failed to insert user: Error 1136 (21S01): Column count doesn't match value count at row 1
 ERROR: 2024/05/12 22:12:25 C:/yarlyki/coding/go/todo_project/internal/user/service.go:42: Username or email already exists
 ERROR: 2024/05/12 22:20:05 C:/yarlyki/coding/go/todo_project/internal/user/service.go:81: Failed to get user profile: sql: no rows in result set
+ERROR: 2024/05/13 17:21:10 C:/yarlyki/coding/go/todo_project/cmd/task/main.go:19: failed to listen: listen tcp :50052: bind: Only one usage of each socket address (protocol/network address/port) is normally permitted.

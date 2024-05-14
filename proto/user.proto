@@ -32,8 +32,18 @@ message GetUserProfileResponse {
   User user = 1;
 }
 
+message DeleteUserRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message DeleteUserResponse {
+  string message = 1;
+}
+
 // Сервис для управления пользователями
 service UserService {
   rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
   rpc GetUserProfile(GetUserProfileRequest) returns (GetUserProfileResponse);
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
 }

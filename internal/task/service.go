@@ -2,19 +2,23 @@ package task
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/damirbeybitov/todo_project/internal/log"
 	taskPB "github.com/damirbeybitov/todo_project/proto/task"
+	"github.com/redis/go-redis/v9"
 )
 
 // TaskService представляет сервис управления задачами.
 type TaskService struct {
+	db *sql.DB
+	redis *redis.Client
 	taskPB.UnimplementedTaskServiceServer
 }
 
 // NewTaskService создает новый экземпляр TaskService.
-func NewTaskService() taskPB.TaskServiceServer {
-	return &TaskService{}
+func NewTaskService(db *sql.DB, redis *redis.Client) taskPB.TaskServiceServer {
+	return &TaskService{db: db, redis: redis}
 }
 
 // CreateTask реализует метод создания задачи в рамках интерфейса TaskServiceServer.

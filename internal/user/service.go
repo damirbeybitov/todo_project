@@ -7,6 +7,7 @@ import (
 
 	"github.com/damirbeybitov/todo_project/internal/log"
 	userPB "github.com/damirbeybitov/todo_project/proto/user"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService struct{
@@ -43,8 +44,18 @@ func (s *UserService) RegisterUser(ctx context.Context, req *userPB.RegisterUser
 		return nil, fmt.Errorf("username or email already exists")
 	}
 
+	// Hash password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		tx.Rollback()
+		log.ErrorLogger.Printf("Failed to hash password: %v", err)
+		return nil, err
+	}
+
+	hashedPasswordStr := string(hashedPassword)
+	
 	// Insert the new user
-	result, err := tx.ExecContext(ctx, "INSERT INTO users (username, email, password) VALUES (?, ?, ?)", req.Username, req.Email, req.Password)
+	result, err := tx.ExecContext(ctx, "INSERT INTO users (username, email, password) VALUES (?, ?, ?)", req.Username, req.Email, hashedPasswordStr)
 	if err != nil {
 		tx.Rollback()
 		log.ErrorLogger.Printf("Failed to insert user: %v", err)
@@ -89,5 +100,48 @@ func (s *UserService) GetUserProfile(ctx context.Context, req *userPB.GetUserPro
 			Username: username,
 			Email:    email,
 		},
+	}, nil
+}
+
+func (s *UserService) DeleteUser(ctx context.Context, req *userPB.DeleteUserRequest) (*userPB.DeleteUserResponse, error) {
+	log.InfoLogger.Printf("Deleting user with ID: %s", req.Username)
+
+	// Check if the provided password matches the username
+	var storedPassword string
+	err := s.db.QueryRowContext(ctx, "SELECT password FROM users WHERE username = ?", req.Username).Scan(&storedPassword)
+	if err != nil {
+		log.ErrorLogger.Printf("Failed to retrieve stored password: %v", err)
+		return nil, err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(storedPassword), []byte(req.Password))
+	if err != nil {
+		log.ErrorLogger.Printf("Invalid password for user: %s", req.Username)
+		return nil, fmt.Errorf("invalid password")
+	}
+
+	// Реализация удаления пользователя
+	result, err := s.db.ExecContext(ctx, "DELETE FROM users WHERE username = ?", req.Username)
+	if err != nil {
+		log.ErrorLogger.Printf("Failed to delete user: %v", err)
+		return nil, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.ErrorLogger.Printf("Failed to get rows affected: %v", err)
+		return nil, err
+	}
+
+	if rowsAffected == 0 {
+		log.ErrorLogger.Printf("User not found")
+		return nil, fmt.Errorf("user not found")
+	}
+
+	log.InfoLogger.Printf("User deleted successfully with username: %s", req.Username)
+
+	message := fmt.Sprintf("User deleted successfully with username: %s", req.Username)
+	return &userPB.DeleteUserResponse{
+		Message: message,
 	}, nil
 }
