@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  user:
+    build:
+      context: .
+      dockerfile: cmd/user/Dockerfile
+    ports:
+      - "50051:50051"
+
+  auth:
+    build:
+      context: .
+      dockerfile: cmd/auth/Dockerfile
+    ports:
+      - "50052:50052"
+
+  task:
+    build:
+      context: .
+      dockerfile: cmd/task/Dockerfile
+    ports:
+      - "50053:50053"
+
+  api:
+    build:
+      context: .
+      dockerfile: cmd/api/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user
+      - auth
+      - task

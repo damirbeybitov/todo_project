@@ -1,0 +1,20 @@
+# Use the official Golang image
+FROM golang:latest
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the necessary files into the container
+COPY go.mod go.sum ./
+COPY cmd/auth/main.go ./cmd/auth/
+COPY internal internal/
+
+# Build the Go app
+RUN go mod download
+RUN go build -o auth-service ./cmd/auth/main.go
+
+# Expose port 50052 to the outside world
+EXPOSE 50052
+
+# Command to run the executable
+CMD ["./auth-service"]

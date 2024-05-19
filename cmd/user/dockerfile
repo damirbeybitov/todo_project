@@ -1,0 +1,20 @@
+# Use the official Golang image
+FROM golang:latest
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the necessary files into the container
+COPY go.mod go.sum ./
+COPY cmd/user/main.go ./cmd/user/
+COPY internal internal/
+
+# Build the Go app
+RUN go mod download
+RUN go build -o user-service ./cmd/user/main.go
+
+# Expose port 50051 to the outside world
+EXPOSE 50051
+
+# Command to run the executable
+CMD ["./user-service"]
