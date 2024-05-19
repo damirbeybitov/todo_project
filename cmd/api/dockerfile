@@ -5,13 +5,13 @@ FROM golang:latest
 WORKDIR /app
 
 # Copy the necessary files into the container
-COPY go.mod go.sum ./
-COPY cmd/api/main.go ./cmd/api/
-COPY internal internal/
+COPY . .
+
+# Download and install dependencies
+RUN go mod download
 
 # Build the Go app
-RUN go mod download
-RUN go build -o api-service ./cmd/api/main.go
+RUN go build -o api-service cmd/api/main.go
 
 # Expose port 8080 to the outside world
 EXPOSE 8080
