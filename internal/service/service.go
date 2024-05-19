@@ -18,9 +18,16 @@ func NewService(handler *handlers.Handler) *Service {
 
 func (s *Service) LaunchServer() {
 	router := mux.NewRouter()
-	router.HandleFunc("/register", s.handler.RegisterHandler).Methods("POST")
-	router.HandleFunc("/login", s.handler.LoginHandler).Methods("GET")
-	// router.HandleFunc("/get_user_profile", s.getUserProfile).Methods("GET")
+
+	
+	authRouter := router.PathPrefix("/auth").Subrouter()
+	authRouter.HandleFunc("/register", s.handler.RegisterHandler).Methods("POST")
+	authRouter.HandleFunc("/login", s.handler.LoginHandler).Methods("GET")
+
+	userRouter := router.PathPrefix("/user").Subrouter()
+	userRouter.Use(s.handler.UserIdentity)
+	userRouter.HandleFunc("/get_user_profile", s.handler.GetUserProfileHandler).Methods("GET")
+	userRouter.HandleFunc("/delete_user", s.handler.DeleteUserHandler).Methods("DELETE")
 	// router.HandleFunc("/create_task", s.createTask).Methods("POST")
 	// router.HandleFunc("/get_tasks", s.getTasks).Methods("GET")
 	// router.HandleFunc("/get_task", s.getTask).Methods("GET")

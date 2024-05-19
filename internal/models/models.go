@@ -43,3 +43,21 @@ type LoginResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }
+
+type GetUserProfileRequest struct {
+	Id int64 `json:"id"`
+}
+
+type GetUserProfileResponse struct {
+	Id int64 `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+}
+
+type DeleteUserRequest struct {
+	Password string `json:"password"`
+}
+
+type DeleteUserResponse struct {
+	Message string `json:"message"`
+}

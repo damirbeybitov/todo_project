@@ -41,9 +41,18 @@ message DeleteUserResponse {
   string message = 1;
 }
 
+message GetUserIdWithUsernameRequest {
+  string username = 1;
+}
+
+message GetUserIdWithUsernameResponse {
+  int64 id = 1;
+}
+
 // Сервис для управления пользователями
 service UserService {
   rpc RegisterUser(RegisterUserRequest) returns (RegisterUserResponse);
   rpc GetUserProfile(GetUserProfileRequest) returns (GetUserProfileResponse);
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+  rpc GetUserIdWithUsername(GetUserIdWithUsernameRequest) returns (GetUserIdWithUsernameResponse);
 }
