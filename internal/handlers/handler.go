@@ -9,6 +9,7 @@ import (
 	"github.com/damirbeybitov/todo_project/internal/log"
 	"github.com/damirbeybitov/todo_project/internal/models"
 	"github.com/damirbeybitov/todo_project/internal/repository"
+	"github.com/gorilla/mux"
 
 	pbAuth "github.com/damirbeybitov/todo_project/proto/auth"
 	pbTask "github.com/damirbeybitov/todo_project/proto/task"
@@ -245,7 +246,6 @@ func (h *Handler) CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	task := models.Task{
 		Title:       req.Title,
 		Description: req.Description,
-		Status:      req.Status,
 		UserId:      req.UserId,
 	}
 
@@ -253,7 +253,6 @@ func (h *Handler) CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 		Task: &pbTask.Task{
 			Title:       task.Title,
 			Description: task.Description,
-			Status:      task.Status,
 			UserId:      task.UserId,
 		},
 	})
@@ -297,7 +296,7 @@ func (h *Handler) GetTasksHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tasks, err := h.repo.MicroServiceClients.TaskClient.GetTasks(r.Context(), &pbTask.GetTasksRequest{
+	pbTasks, err := h.repo.MicroServiceClients.TaskClient.GetTasks(r.Context(), &pbTask.GetTasksRequest{
 		Username: username,
 	})
 	if err != nil {
@@ -305,8 +304,20 @@ func (h *Handler) GetTasksHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var tasks []models.Task
+	pbTask := pbTasks.GetTasks()
+	for _, task := range pbTask {
+		tasks = append(tasks, models.Task{
+			Id:          task.Id,
+			Title:       task.Title,
+			Description: task.Description,
+			Status:      task.Status,
+			UserId:      task.UserId,
+		})
+	}
+
 	response := models.GetTasksResponse{
-		Tasks: make([]models.Task, len(tasks.Tasks)),
+		Tasks: tasks,
 	}
 
 	responseJSON, err := json.Marshal(response)
@@ -323,7 +334,7 @@ func (h *Handler) GetTasksHandler(w http.ResponseWriter, r *http.Request) {
 
 // GetTaskHandler handles retrieving a task by ID
 func (h *Handler) GetTaskHandler(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Query().Get("id")
+	id := mux.Vars(r)["id"]
 	if id == "" {
 		log.ErrorLogger.Print("Missing task ID")
 		http.Error(w, "Missing task ID", http.StatusBadRequest)
@@ -367,7 +378,20 @@ func (h *Handler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Id == 0 || req.Title == "" || req.Description == "" || req.UserID == 0 {
+	userToken := r.Header.Get("Authorization")
+	if userToken == "" {
+		log.ErrorLogger.Print("Token is missing in Header")
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	userId, err := h.repo.GetUserIdFromRequest(userToken)
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	if req.Id == 0 || req.Title == "" || req.Description == "" || userId == 0 {
 		log.ErrorLogger.Print("Missing required fields")
 		http.Error(w, "Missing required fields", http.StatusBadRequest)
 		return
@@ -378,7 +402,7 @@ func (h *Handler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 		Title:       req.Title,
 		Description: req.Description,
 		Status:      req.Status,
-		UserId:      req.UserID,
+		UserId:      userId,
 	}
 
 	UpdateTaskResponse, err := h.repo.MicroServiceClients.TaskClient.UpdateTask(r.Context(), &pbTask.UpdateTaskRequest{
@@ -387,7 +411,7 @@ func (h *Handler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 			Title:       task.Title,
 			Description: task.Description,
 			Status:      task.Status,
-			UserId:      task.UserID,
+			UserId:      userId,
 		},
 	})
 
@@ -419,7 +443,7 @@ func (h *Handler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 // DeleteTaskHandler handles deleting a task
 func (h *Handler) DeleteTaskHandler(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Query().Get("id")
+	id := mux.Vars(r)["id"]
 	if id == "" {
 		log.ErrorLogger.Print("Missing task ID")
 		http.Error(w, "Missing task ID", http.StatusBadRequest)

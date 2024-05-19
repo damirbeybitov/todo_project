@@ -92,7 +92,9 @@ func (s *TaskService) GetTasks(ctx context.Context, req *taskPB.GetTasksRequest)
 		})
 	}
 
-	return &taskPB.GetTasksResponse{Tasks: pbTasks}, nil
+	return &taskPB.GetTasksResponse{
+		Tasks: pbTasks,
+	}, nil
 }
 
 // UpdateTask реализует метод обновления задачи в рамках интерфейса TaskServiceServer.

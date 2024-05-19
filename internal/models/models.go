@@ -73,7 +73,6 @@ type DeleteUserResponse struct {
 type CreateTaskRequest struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
-	Status      bool   `json:"status"`
 	UserId      int64  `json:"user_id"`
 }
 
