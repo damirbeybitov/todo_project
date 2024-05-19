@@ -2,23 +2,22 @@ package task
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/damirbeybitov/todo_project/internal/log"
+	"github.com/damirbeybitov/todo_project/internal/models"
+	"github.com/damirbeybitov/todo_project/internal/task/repository"
 	taskPB "github.com/damirbeybitov/todo_project/proto/task"
-	"github.com/redis/go-redis/v9"
 )
 
 // TaskService представляет сервис управления задачами.
 type TaskService struct {
-	db *sql.DB
-	redis *redis.Client
+	repo *repository.Repository
 	taskPB.UnimplementedTaskServiceServer
 }
 
 // NewTaskService создает новый экземпляр TaskService.
-func NewTaskService(db *sql.DB, redis *redis.Client) taskPB.TaskServiceServer {
-	return &TaskService{db: db, redis: redis}
+func NewTaskService(repo *repository.Repository) taskPB.TaskServiceServer {
+	return &TaskService{repo: repo}
 }
 
 // CreateTask реализует метод создания задачи в рамках интерфейса TaskServiceServer.
@@ -28,9 +27,23 @@ func (s *TaskService) CreateTask(ctx context.Context, req *taskPB.CreateTaskRequ
 	// Реализация создания задачи
 
 	// В данном примере просто возвращается фиктивный идентификатор задачи.
-	return &taskPB.CreateTaskResponse{
-		Id: "123",
-	}, nil
+	task := models.Task{
+		Title:       req.Task.Title,
+		Description: req.Task.Description,
+		Status:      req.Task.Status,
+		UserID:      req.Task.UserId,
+	}
+
+	taskID, err := s.repo.CreateTask(task)
+	if err != nil {
+		log.ErrorLogger.Printf("Failed to create task: %v", err)
+		return nil, err
+	}
+
+	return &taskPB.CreateTaskResponse{Id: taskID}, nil
+	// return &taskPB.CreateTaskResponse{
+	// 	Id: "123",
+	// }, nil
 }
 
 // GetTask реализует метод получения задачи в рамках интерфейса TaskServiceServer.

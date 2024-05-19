@@ -13,11 +13,11 @@ type Repository struct {
 	DB *sql.DB
 }
 
-func NewRepository (db *sql.DB) *Repository{
+func NewRepository(db *sql.DB) *Repository {
 	return &Repository{DB: db}
 }
 
-func (r *Repository) CheckUserInDB (tx *sql.Tx, username string, email string) error {
+func (r *Repository) CheckUserInDB(tx *sql.Tx, username string, email string) error {
 	// Check if the user already exists
 	var count int
 	err := tx.QueryRowContext(context.Background(), "SELECT COUNT(*) FROM users WHERE username = ? OR email = ?", username, email).Scan(&count)
@@ -36,7 +36,7 @@ func (r *Repository) CheckUserInDB (tx *sql.Tx, username string, email string) e
 	return nil
 }
 
-func (r *Repository) AddUserToDB (tx *sql.Tx, username string, email string, password string) (int64, error) {
+func (r *Repository) AddUserToDB(tx *sql.Tx, username string, email string, password string) (int64, error) {
 	result, err := tx.Exec("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", username, email, password)
 	if err != nil {
 		tx.Rollback()
@@ -54,7 +54,7 @@ func (r *Repository) AddUserToDB (tx *sql.Tx, username string, email string, pas
 	return id, nil
 }
 
-func (r *Repository) CheckPassword (username string, password string) error {
+func (r *Repository) CheckPassword(username string, password string) error {
 	var storedPassword string
 	err := r.DB.QueryRow("SELECT password FROM users WHERE username = ?", username).Scan(&storedPassword)
 	if err != nil {
@@ -71,7 +71,7 @@ func (r *Repository) CheckPassword (username string, password string) error {
 	return nil
 }
 
-func (r * Repository) DeleteuserFromDB (username string) error {
+func (r *Repository) DeleteuserFromDB(username string) error {
 	result, err := r.DB.Exec("DELETE FROM users WHERE username = ?", username)
 	if err != nil {
 		log.ErrorLogger.Printf("Failed to delete user: %v", err)

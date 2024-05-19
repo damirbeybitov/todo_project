@@ -10,6 +10,14 @@ type Config struct {
 	SqlConnection string `json:"sqlConnection"`
 }
 
+type Task struct {
+	ID          int64
+	Title       string
+	Description string
+	Status      string
+	UserID      int64
+}
+
 type MicroServiceClients struct {
 	UserClient pbUser.UserServiceClient
 	AuthClient pbAuth.AuthServiceClient
@@ -27,8 +35,8 @@ type RegisterResponse struct {
 }
 
 type LoginRequest struct {
-	Username string	`json:"username"`
-	Password string	`json:"password"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 type LoginResponse struct {

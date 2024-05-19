@@ -4,12 +4,12 @@ option go_package = "github.com/damirbeybitov/todo_project/proto/task";
 
 // Сообщение для представления задачи
 message Task {
-  string id = 1;
+  int64 id = 1;
   string title = 2;
   string description = 3;
   string deadline = 4;
   string status = 5;
-  string user_id = 6;
+  int64 user_id = 6;
 }
 
 // Сообщение для запроса создания задачи
@@ -19,12 +19,12 @@ message CreateTaskRequest {
 
 // Ответ на запрос создания задачи
 message CreateTaskResponse {
-  string id = 1;
+  int64 id = 1;
 }
 
 // Сообщение для запроса получения задачи
 message GetTaskRequest {
-  string id = 1;
+  int64 id = 1;
 }
 
 // Ответ на запрос получения задачи
@@ -44,12 +44,12 @@ message UpdateTaskResponse {
 
 // Сообщение для запроса удаления задачи
 message DeleteTaskRequest {
-  string id = 1;
+  int64 id = 1;
 }
 
 // Ответ на запрос удаления задачи
 message DeleteTaskResponse {
-  string id = 1;
+  int64 id = 1;
 }
 
 // Сервис для управления задачами
