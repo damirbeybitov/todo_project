@@ -23,6 +23,7 @@ func (s *Service) LaunchServer() {
 	authRouter := router.PathPrefix("/auth").Subrouter()
 	authRouter.HandleFunc("/register", s.handler.RegisterHandler).Methods("POST")
 	authRouter.HandleFunc("/login", s.handler.LoginHandler).Methods("GET")
+	authRouter.HandleFunc("/refresh_token", s.handler.RefreshTokenHandler).Methods("GET")
 
 	userRouter := router.PathPrefix("/user").Subrouter()
 	userRouter.Use(s.handler.UserIdentity)

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 
@@ -97,6 +98,41 @@ func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(responseJSON)
 	log.InfoLogger.Print("Login endpoint done successfully")
+}
+
+func (h *Handler) RefreshTokenHandler(w http.ResponseWriter, r *http.Request) {
+	var refreshToken models.RefreshTokenRequest
+	if err := json.NewDecoder(r.Body).Decode(&refreshToken); err != nil {
+		log.ErrorLogger.Printf("Invalid request body: %v", err)
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+	if refreshToken.RefreshToken == "" {
+		log.ErrorLogger.Print("Missing required fields")
+		http.Error(w, "Missing required fields", http.StatusBadRequest)
+		return
+	}
+	accessToken, err := h.repo.MicroServiceClients.AuthClient.RefreshToken(context.Background(), &pbAuth.RefreshTokenRequest{
+		RefreshToken: refreshToken.RefreshToken,
+	})
+	if err != nil {
+		http.Error(w, "Failed to refresh token", http.StatusInternalServerError)
+		return
+	}
+
+	response := models.RefreshTokenResponse{
+		AccessToken: accessToken.AccessToken,
+	}
+	responseJSON, err := json.Marshal(response)
+	if err != nil {
+		log.ErrorLogger.Printf("Failed to marshal response: %v", err)
+		http.Error(w, "Failed to marshal response", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(responseJSON)
+	log.InfoLogger.Print("Refresh token endpoint done successfully")
 }
 
 func (h *Handler) GetUserProfileHandler(w http.ResponseWriter, r *http.Request) {

@@ -32,7 +32,7 @@ func GenerateAccessToken(username string) (string, error) {
 	return token.SignedString([]byte(signingKey))
 }
 
-func VerifyToken(token string) (string, error){
+func VerifyToken(token string) (string, error) {
 	t, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		return []byte(signingKey), nil
 	})
@@ -48,4 +48,13 @@ func VerifyToken(token string) (string, error){
 	}
 
 	return claims["sub"].(string), nil
+}
+
+func RefreshToken(refreshToken string) (string, error) {
+	username, err := VerifyToken(refreshToken)
+	if err != nil {
+		return "", err
+	}
+
+	return GenerateAccessToken(username)
 }
