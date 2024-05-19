@@ -11,11 +11,11 @@ type Config struct {
 }
 
 type Task struct {
-	ID          int64
-	Title       string
-	Description string
-	Status      bool
-	UserID      int64
+	Id          int64  `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Status      bool   `json:"status"`
+	UserId      int64  `json:"user_id"`
 }
 
 type MicroServiceClients struct {
@@ -52,17 +52,6 @@ type RefreshTokenResponse struct {
 	AccessToken string `json:"access_token"`
 }
 
-type TaskRequest struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Status      bool   `json:"status"`
-	UserId      int64  `json:"user_id"`
-}
-
-type TaskResponse struct {
-	Id int64 `json:"id"`
-}
-
 type GetUserProfileRequest struct {
 	Id int64 `json:"id"`
 }
@@ -81,13 +70,41 @@ type DeleteUserResponse struct {
 	Message string `json:"message"`
 }
 
-type GetTaskRequest struct {
+type CreateTaskRequest struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Status      bool   `json:"status"`
 	UserId      int64  `json:"user_id"`
 }
 
-type GetTaskResponse struct {
+type CreateTaskResponse struct {
 	Id int64 `json:"id"`
+}
+
+type GetTasksResponse struct {
+	Tasks []Task `json:"tasks"`
+}
+
+type UpdateTaskRequest struct {
+	Id          int64  `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Status      bool   `json:"status"`
+	UserId      int64  `json:"user_id"`
+}
+
+type UpdateTaskResponse struct {
+	Id          int64  `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Status      bool   `json:"status"`
+	UserId      int64  `json:"user_id"`
+}
+
+type DeleteTaskRequest struct {
+	Id int64 `json:"id"`
+}
+
+type DeleteTaskResponse struct {
+	Message string `json:"message"`
 }
