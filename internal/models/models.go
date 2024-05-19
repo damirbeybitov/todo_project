@@ -80,3 +80,14 @@ type DeleteUserRequest struct {
 type DeleteUserResponse struct {
 	Message string `json:"message"`
 }
+
+type GetTaskRequest struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Status      bool   `json:"status"`
+	UserId      int64  `json:"user_id"`
+}
+
+type GetTaskResponse struct {
+	Id int64 `json:"id"`
+}
