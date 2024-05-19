@@ -33,7 +33,7 @@ func (s *Service) LaunchServer() {
 	userRouter.HandleFunc("/get_user_profile", s.handler.GetUserProfileHandler).Methods("GET")
 	userRouter.HandleFunc("/delete_user", s.handler.DeleteUserHandler).Methods("DELETE")
 	// router.HandleFunc("/create_task", s.createTask).Methods("POST")
-	// router.HandleFunc("/get_tasks", s.getTasks).Methods("GET")
+	router.HandleFunc("/get_tasks/{id}", s.handler.GetTasksHandler).Methods("GET")
 	// router.HandleFunc("/get_task", s.getTask).Methods("GET")
 	// router.HandleFunc("/update_task", s.updateTask).Methods("PUT")
 	// router.HandleFunc("/delete_task", s.deleteTask).Methods("DELETE")
