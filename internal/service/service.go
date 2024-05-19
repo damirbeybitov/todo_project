@@ -19,6 +19,9 @@ func NewService(handler *handlers.Handler) *Service {
 func (s *Service) LaunchServer() {
 	router := mux.NewRouter()
 
+	router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("pong"))
+	})
 	
 	authRouter := router.PathPrefix("/auth").Subrouter()
 	authRouter.HandleFunc("/register", s.handler.RegisterHandler).Methods("POST")
@@ -35,6 +38,6 @@ func (s *Service) LaunchServer() {
 	// router.HandleFunc("/update_task", s.updateTask).Methods("PUT")
 	// router.HandleFunc("/delete_task", s.deleteTask).Methods("DELETE")
 
+	log.InfoLogger.Print("Main service is running on port 8080")
 	http.ListenAndServe(":8080", router)
-	log.InfoLogger.Print("Authentication service is running on port 8080")
 }
