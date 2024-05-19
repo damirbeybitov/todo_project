@@ -36,29 +36,31 @@ func (s *TaskService) CreateTask(ctx context.Context, req *taskPB.CreateTaskRequ
 
 	taskID, err := s.repo.CreateTask(task)
 	if err != nil {
-		log.ErrorLogger.Printf("Failed to create task: %v", err)
 		return nil, err
 	}
 
 	return &taskPB.CreateTaskResponse{Id: taskID}, nil
-	// return &taskPB.CreateTaskResponse{
-	// 	Id: "123",
-	// }, nil
 }
 
 // GetTask реализует метод получения задачи в рамках интерфейса TaskServiceServer.
 func (s *TaskService) GetTask(ctx context.Context, req *taskPB.GetTaskRequest) (*taskPB.GetTaskResponse, error) {
-	log.InfoLogger.Printf("Getting task with ID: %s", req.Id)
+	log.InfoLogger.Printf("Getting task with ID: %d", req.Id)
 
 	// Реализация получения задачи
+	task, err := s.repo.GetTaskByID(req.Id)
+	if err != nil {
+		return nil, err
+	}
 
+	log.InfoLogger.Printf("Task found: %v", task)
 	// В данном примере просто возвращается фиктивная задача.
 	return &taskPB.GetTaskResponse{
 		Task: &taskPB.Task{
-			Id:          req.Id,
-			Title:       "Example Task",
-			Description: "This is an example task",
-			// Другие поля задачи
+			Id:          task.ID,
+			Title:       task.Title,
+			Description: task.Description,
+			Status:      task.Status,
+			UserId:      task.UserID,
 		},
 	}, nil
 }
@@ -68,10 +70,29 @@ func (s *TaskService) UpdateTask(ctx context.Context, req *taskPB.UpdateTaskRequ
 	log.InfoLogger.Printf("Updating task with ID: %s", req.Task.Id)
 
 	// Реализация обновления задачи
+	task := models.Task{
+		ID:          req.Task.Id,
+		Title:       req.Task.Title,
+		Description: req.Task.Description,
+		Status:      req.Task.Status,
+		UserID:      req.Task.UserId,
+	}
 
+	err := s.repo.UpdateTask(task)
+	if err != nil {
+		return nil, err
+	}
+
+	log.InfoLogger.Printf("Task updated: %v", task)
 	// В данном примере просто возвращается сообщение об успешном обновлении.
 	return &taskPB.UpdateTaskResponse{
-		Task: req.Task,
+		Task: &taskPB.Task{
+			Id:          req.Task.Id,
+			Title:       req.Task.Title,
+			Description: req.Task.Description,
+			Status:      req.Task.Status,
+			UserId:      req.Task.UserId,
+		},
 	}, nil
 }
 
@@ -80,9 +101,12 @@ func (s *TaskService) DeleteTask(ctx context.Context, req *taskPB.DeleteTaskRequ
 	log.InfoLogger.Printf("Deleting task with ID: %s", req.Id)
 
 	// Реализация удаления задачи
+	err := s.repo.DeleteTask(req.Id)
+	if err != nil {
+		return nil, err
+	}
 
+	log.InfoLogger.Printf("Task deleted with ID: %s", req.Id)
 	// В данном примере просто возвращается сообщение об успешном удалении.
-	return &taskPB.DeleteTaskResponse{
-		Id: req.Id,
-	}, nil
+	return &taskPB.DeleteTaskResponse{Id: req.Id}, nil
 }
