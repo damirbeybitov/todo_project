@@ -19,10 +19,6 @@ func NewUserService(repo *repository.Repository) userPB.UserServiceServer {
 	return &UserService{repo: repo}
 }
 
-func init() {
-
-}
-
 func (s *UserService) RegisterUser(ctx context.Context, req *userPB.RegisterUserRequest) (*userPB.RegisterUserResponse, error) {
 	log.InfoLogger.Printf("Registering user with username: %s, email: %s", req.Username, req.Email)
 
@@ -65,12 +61,12 @@ func (s *UserService) RegisterUser(ctx context.Context, req *userPB.RegisterUser
 	log.InfoLogger.Printf("User %s registered successfully with ID: %d", req.Username, id)
 
 	return &userPB.RegisterUserResponse{
-		Id: fmt.Sprintf("%d", id),
+		Id: id,
 	}, nil
 }
 
 func (s *UserService) GetUserProfile(ctx context.Context, req *userPB.GetUserProfileRequest) (*userPB.GetUserProfileResponse, error) {
-	log.InfoLogger.Printf("Getting user profile for user ID: %s", req.Id)
+	log.InfoLogger.Printf("Getting user profile for user ID: %d", req.Id)
 
 	// Реализация получения профиля пользователя
 	var username, email string
@@ -80,7 +76,7 @@ func (s *UserService) GetUserProfile(ctx context.Context, req *userPB.GetUserPro
 		return nil, err
 	}
 
-	log.InfoLogger.Printf("User profile retrieved successfully for user ID: %s", req.Id)
+	log.InfoLogger.Printf("User profile retrieved successfully for user ID: %d", req.Id)
 
 	return &userPB.GetUserProfileResponse{
 		User: &userPB.User{

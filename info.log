@@ -28,3 +28,11 @@ INFO: 2024/05/13 20:28:35 C:/yarlyki/coding/go/todo_project/internal/user/servic
 INFO: 2024/05/13 20:28:36 C:/yarlyki/coding/go/todo_project/internal/user/service.go:78: User registered successfully with ID: 2
 INFO: 2024/05/13 20:30:07 C:/yarlyki/coding/go/todo_project/internal/user/service.go:107: Deleting user with ID: damir
 INFO: 2024/05/13 20:30:07 C:/yarlyki/coding/go/todo_project/internal/user/service.go:141: User deleted successfully with username: damir
+INFO: 2024/05/19 14:06:35 C:/yarlyki/coding/go/todo_project/cmd/user/main.go:39: User service is running on port 50051
+INFO: 2024/05/19 14:06:47 C:/yarlyki/coding/go/todo_project/cmd/auth/main.go:39: Authentication service is running on port 50051
+INFO: 2024/05/19 14:09:57 C:/yarlyki/coding/go/todo_project/internal/user/serivice/service.go:23: Registering user with username: damir, email: damir@gmail.com
+INFO: 2024/05/19 14:11:02 C:/yarlyki/coding/go/todo_project/cmd/user/main.go:39: User service is running on port 50051
+INFO: 2024/05/19 14:11:39 C:/yarlyki/coding/go/todo_project/internal/user/serivice/service.go:23: Registering user with username: damir, email: damir@gmail.com
+INFO: 2024/05/19 14:11:39 C:/yarlyki/coding/go/todo_project/internal/user/serivice/service.go:61: User damir registered successfully with ID: 3
+INFO: 2024/05/19 14:11:39 C:/yarlyki/coding/go/todo_project/internal/handlers/handler.go:61: Register endpoint done successfully
+INFO: 2024/05/19 14:26:17 C:/yarlyki/coding/go/todo_project/cmd/auth/main.go:39: Authentication service is running on port 50051
