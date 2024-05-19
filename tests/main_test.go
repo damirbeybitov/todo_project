@@ -12,7 +12,7 @@ import (
 
 func setupTestDB(t *testing.T) *sql.DB {
 	// Connect to the test database
-	db, err := sql.Open("mysql", "root:root@tcp(localhost:3306)/to_do")
+	db, err := sql.Open("mysql", "root:@tcp(localhost:3306)/to_do")
 	if err != nil {
 		t.Fatalf("Error connecting to MySQL: %v", err)
 	}
@@ -37,21 +37,32 @@ func TestCheckUserInDB(t *testing.T) {
     if err != nil {
         t.Errorf("CheckUserInDB returned an error: %v", err)
     } else {
-        log.InfoLogger.Printf("User not found in the database: %v", err)
+        log.InfoLogger.Printf("User not found in the database")
     }
 
     // Test case 2: user already exists
-    _, err = r.AddUserToDB(tx, "existing_user", "existing_email@example.com", "password")
+    _, err = r.AddUserToDB(tx, "test_user", "test_email@example.com", "password")
     if err != nil {
         t.Fatalf("Error adding user to test database: %v", err)
     }
-    err = r.CheckUserInDB(tx, "existing_user", "existing_email@example.com")
+
+    // Check if user now exists
+    err = r.CheckUserInDB(tx, "test_user", "test_email@example.com")
     if err == nil {
-        t.Error("Expected CheckUserInDB to return an error for existing user, but it didn't")
+        log.InfoLogger.Printf("User successfully added to the database")
+    } else {
+        t.Errorf("Expected CheckUserInDB to not return an error for newly added user, but got: %v", err)
+    }
+
+    // Attempt to add the same user again
+    _, err = r.AddUserToDB(tx, "test_user", "test_email@example.com", "password")
+    if err == nil {
+        t.Error("Expected AddUserToDB to return an error for existing user, but it didn't")
     } else {
         log.InfoLogger.Printf("User already exists in the database: %v", err)
     }
 }
+
 
 func TestAddUserToDB(t *testing.T) {
     db := setupTestDB(t)
@@ -61,7 +72,7 @@ func TestAddUserToDB(t *testing.T) {
     if err != nil {
         t.Fatalf("Error beginning transaction: %v", err)
     }
-    defer tx.Commit()
+    defer tx.Rollback()
 
     r := &repository.Repository{DB: db}
 
