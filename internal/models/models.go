@@ -43,3 +43,14 @@ type LoginResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }
+
+type TaskRequest struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Status      bool   `json:"status"`
+	UserId      int64  `json:"user_id"`
+}
+
+type TaskResponse struct {
+	Id int64 `json:"id"`
+}

@@ -1,7 +1,9 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 
 	"github.com/damirbeybitov/todo_project/internal/log"
@@ -36,13 +38,29 @@ func (r *Repository) CreateTask(task models.Task) (int64, error) {
 
 func (r *Repository) GetTaskByID(taskID int64) (models.Task, error) {
 	task := models.Task{}
-	err := r.db.QueryRow("SELECT id, title, description, status, user_id FROM tasks WHERE id = ?", taskID).Scan(&task.ID, &task.Title, &task.Description, &task.Status, &task.UserID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return task, fmt.Errorf("task not found")
+
+	taskKey := fmt.Sprintf("task:%d", taskID)
+	taskData, err := r.redis.Get(context.Background(), taskKey).Result()
+	if err == redis.Nil {
+		// If task not found in cache, get it from the database
+		log.InfoLogger.Printf("Task not found in cache, fetching from database")
+		err = r.db.QueryRow("SELECT id, title, description, status, user_id FROM tasks WHERE id = ?", taskID).
+			Scan(&task.ID, &task.Title, &task.Description, &task.Status, &task.UserID)
+		if err != nil {
+			log.ErrorLogger.Printf("Failed to get task from db: %v", err)
+			return task, err
 		}
-		log.ErrorLogger.Printf("Failed to get task by ID: %v", err)
+
+		// Cache the task in Redis
+		taskJSON, _ := json.Marshal(task)
+		r.redis.Set(context.Background(), taskKey, taskJSON, 0)
+		log.InfoLogger.Printf("Task cached: %s", taskJSON)
+	} else if err != nil {
+		log.ErrorLogger.Printf("Failed to get task from cache: %v", err)
 		return task, err
+	} else {
+		log.InfoLogger.Printf("Task found in cache: %s", taskData)
+		json.Unmarshal([]byte(taskData), &task)
 	}
 
 	return task, nil
