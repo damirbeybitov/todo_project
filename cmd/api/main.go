@@ -1,20 +1,17 @@
 package main
 
 import (
-	"context"
 	"log"
 
+	"github.com/damirbeybitov/todo_project/internal/handlers"
+	"github.com/damirbeybitov/todo_project/internal/models"
+	"github.com/damirbeybitov/todo_project/internal/repository"
+	"github.com/damirbeybitov/todo_project/internal/service"
 	pbAuth "github.com/damirbeybitov/todo_project/proto/auth"
 	pbTask "github.com/damirbeybitov/todo_project/proto/task"
 	pbUser "github.com/damirbeybitov/todo_project/proto/user"
 	"google.golang.org/grpc"
 )
-
-type MicroserviceClients struct {
-    UserClient pbUser.UserServiceClient
-    AuthClient pbAuth.AuthServiceClient
-    TaskClient pbTask.TaskServiceClient
-}
 
 func main() {
 	// Подключение к серверу микросервиса пользователей
@@ -43,22 +40,29 @@ func main() {
 
 	taskClient := pbTask.NewTaskServiceClient(taskConn)
 
-	microserviceClients := MicroserviceClients{
+	microServiceClients := models.MicroServiceClients{
 		UserClient: userClient,
 		AuthClient: authClient,
 		TaskClient: taskClient,
 	}
 
+	repo := repository.NewRepository(microServiceClients)
+
+	handler := handlers.NewHandler(repo)
+
+	service := service.NewService(handler)
+	service.LaunchServer()
+
 	// Вызов метода RegisterUser
-	registerResponse, err := microserviceClients.UserClient.RegisterUser(context.Background(), &pbUser.RegisterUserRequest{
-		Username: "damir",
-		Email:    "damir@example.com",
-		Password: "password",
-	})
-	if err != nil {
-		log.Fatalf("could not register user: %v", err)
-	}
-	log.Printf("Registered user with ID: %s", registerResponse.Id)
+	// registerResponse, err := microServiceClients.UserClient.RegisterUser(context.Background(), &pbUser.RegisterUserRequest{
+	// 	Username: "damir",
+	// 	Email:    "damir@example.com",
+	// 	Password: "password",
+	// })
+	// if err != nil {
+	// 	log.Fatalf("could not register user: %v", err)
+	// }
+	// log.Printf("Registered user with ID: %s", registerResponse.Id)
 
 	// Вызов метода GetUserProfile
 	// getUserProfileResponse, err := microserviceClients.UserClient.GetUserProfile(context.Background(), &pbUser.GetUserProfileRequest{
