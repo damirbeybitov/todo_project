@@ -52,12 +52,23 @@ type RefreshTokenResponse struct {
 	AccessToken string `json:"access_token"`
 }
 
+type TaskRequest struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Status      bool   `json:"status"`
+	UserId      int64  `json:"user_id"`
+}
+
+type TaskResponse struct {
+	Id int64 `json:"id"`
+}
+
 type GetUserProfileRequest struct {
 	Id int64 `json:"id"`
 }
 
 type GetUserProfileResponse struct {
-	Id int64 `json:"id"`
+	Id       int64  `json:"id"`
 	Username string `json:"username"`
 	Email    string `json:"email"`
 }

@@ -6,11 +6,11 @@ import (
 
 	"github.com/damirbeybitov/todo_project/internal/config"
 	"github.com/damirbeybitov/todo_project/internal/log"
+	"github.com/damirbeybitov/todo_project/internal/redis"
 	"github.com/damirbeybitov/todo_project/internal/task/repository"
 	task "github.com/damirbeybitov/todo_project/internal/task/service"
 	pb "github.com/damirbeybitov/todo_project/proto/task"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/redis/go-redis/v9"
 	"google.golang.org/grpc"
 )
 
@@ -31,11 +31,7 @@ func main() {
 	}
 	defer db.Close()
 
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
+	redisClient := redis.NewClient("localhost:6379", "", 0)
 	defer redisClient.Close()
 
 	repo := repository.NewRepository(db, redisClient)

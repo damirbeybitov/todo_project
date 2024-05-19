@@ -49,6 +49,7 @@ func (s *TaskService) GetTask(ctx context.Context, req *taskPB.GetTaskRequest) (
 	// Реализация получения задачи
 	task, err := s.repo.GetTaskByID(req.Id)
 	if err != nil {
+		log.ErrorLogger.Printf("Failed to get task: %v", err)
 		return nil, err
 	}
 
