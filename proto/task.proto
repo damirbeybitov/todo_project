@@ -48,13 +48,24 @@ message DeleteTaskRequest {
 
 // Ответ на запрос удаления задачи
 message DeleteTaskResponse {
-  int64 id = 1;
+  string message = 1;
+}
+
+// Сообщение для запроса всех задач
+message GetTasksRequest {
+  string username = 1;
+}
+
+// Ответ на запрос всех задач
+message GetTasksResponse {
+  repeated Task tasks = 1;
 }
 
 // Сервис для управления задачами
 service TaskService {
   rpc CreateTask(CreateTaskRequest) returns (CreateTaskResponse);
   rpc GetTask(GetTaskRequest) returns (GetTaskResponse);
+  rpc GetTasks(GetTasksRequest) returns (GetTasksResponse);
   rpc UpdateTask(UpdateTaskRequest) returns (UpdateTaskResponse);
   rpc DeleteTask(DeleteTaskRequest) returns (DeleteTaskResponse);
 }
