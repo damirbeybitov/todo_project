@@ -12,7 +12,7 @@ import (
 
 func setupTestDB(t *testing.T) *sql.DB {
 	// Connect to the test database
-	db, err := sql.Open("mysql", "root:@tcp(localhost:3306)/to_do")
+	db, err := sql.Open("mysql", "root:root@tcp(localhost:3306)/to_do")
 	if err != nil {
 		t.Fatalf("Error connecting to MySQL: %v", err)
 	}
@@ -41,6 +41,10 @@ func TestCheckUserInDB(t *testing.T) {
     }
 
     // Test case 2: user already exists
+    _, err = r.AddUserToDB(tx, "existing_user", "existing_email@example.com", "password")
+    if err != nil {
+        t.Fatalf("Error adding user to test database: %v", err)
+    }
     err = r.CheckUserInDB(tx, "existing_user", "existing_email@example.com")
     if err == nil {
         t.Error("Expected CheckUserInDB to return an error for existing user, but it didn't")
@@ -140,7 +144,7 @@ func TestDeleteuserFromDB(t *testing.T) {
     }
     defer txDelete.Rollback()
 
-    err = r.DeleteuserFromDB("user_to_delete")
+    err = r.DeleteUserFromDB(txDelete, "user_to_delete")
     if err != nil {
         log.ErrorLogger.Printf("DeleteuserFromDB returned an error: %v", err)
         t.Errorf("DeleteuserFromDB returned an error: %v", err)

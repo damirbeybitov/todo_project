@@ -94,8 +94,14 @@ func (s *UserService) DeleteUser(ctx context.Context, req *userPB.DeleteUserRequ
 		return nil, err
 	}
 
+	tx, err := s.repo.DB.BeginTx(ctx, nil)
+	if err != nil {
+		log.ErrorLogger.Printf("Failed to start transaction: %v", err)
+		return nil, err
+	}
+
 	// Реализация удаления пользователя
-	if err := s.repo.DeleteuserFromDB(req.Username); err != nil {
+	if err := s.repo.DeleteUserFromDB(tx, req.Username); err != nil {
 		return nil, err
 	}
 

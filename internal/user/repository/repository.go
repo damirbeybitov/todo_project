@@ -71,7 +71,7 @@ func (r *Repository) CheckPassword(username string, password string) error {
 	return nil
 }
 
-func (r *Repository) DeleteuserFromDB(username string) error {
+func (r *Repository) DeleteUserFromDB(tx *sql.Tx, username string) error {
 	result, err := r.DB.Exec("DELETE FROM users WHERE username = ?", username)
 	if err != nil {
 		log.ErrorLogger.Printf("Failed to delete user: %v", err)
