@@ -11,12 +11,12 @@ import (
 
 // TaskService представляет сервис управления задачами.
 type TaskService struct {
-	repo repository.Repository
+	repo *repository.Repository
 	taskPB.UnimplementedTaskServiceServer
 }
 
 // NewTaskService создает новый экземпляр TaskService.
-func NewTaskService(repo repository.Repository) taskPB.TaskServiceServer {
+func NewTaskService(repo *repository.Repository) taskPB.TaskServiceServer {
 	return &TaskService{repo: repo}
 }
 

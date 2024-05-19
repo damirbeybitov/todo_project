@@ -38,10 +38,10 @@ func main() {
 	})
 	defer redisClient.Close()
 
-	repo := repository.NewRepository(db)
+	repo := repository.NewRepository(db, redisClient)
 
 	server := grpc.NewServer()
-	taskService := task.NewTaskService(repo, redisClient)
+	taskService := task.NewTaskService(repo)
 	pb.RegisterTaskServiceServer(server, taskService)
 
 	log.InfoLogger.Println("Task manager service is running on port 50053")
