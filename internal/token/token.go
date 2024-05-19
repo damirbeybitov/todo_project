@@ -1,8 +1,10 @@
 package auth
 
 import (
+	"errors"
 	"time"
 
+	"github.com/damirbeybitov/todo_project/internal/log"
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -35,12 +37,14 @@ func VerifyToken(token string) (string, error){
 		return []byte(signingKey), nil
 	})
 	if err != nil {
+		log.ErrorLogger.Printf("Error parsing JWT token: %v", err)
 		return "", err
 	}
 
 	claims, ok := t.Claims.(jwt.MapClaims)
 	if !ok || !t.Valid {
-		return "", err
+		log.ErrorLogger.Printf("Invalid JWT token")
+		return "", errors.New("invalid JWT token")
 	}
 
 	return claims["sub"].(string), nil

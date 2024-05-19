@@ -47,7 +47,6 @@ func (s *UserService) RegisterUser(ctx context.Context, req *userPB.RegisterUser
 	// Insert the new user
 	id, err := s.repo.AddUserToDB(tx, req.Username, req.Email, hashedPasswordStr)
 	if err != nil {
-		log.ErrorLogger.Printf("Failed to insert user: %v", err)
 		return nil, err
 	
 	}
@@ -88,7 +87,7 @@ func (s *UserService) GetUserProfile(ctx context.Context, req *userPB.GetUserPro
 }
 
 func (s *UserService) DeleteUser(ctx context.Context, req *userPB.DeleteUserRequest) (*userPB.DeleteUserResponse, error) {
-	log.InfoLogger.Printf("Deleting user with ID: %s", req.Username)
+	log.InfoLogger.Printf("Deleting user with username: %s", req.Username)
 
 	// Check if the provided password matches the username
 	if err := s.repo.CheckPassword(req.Username, req.Password); err != nil {
@@ -105,5 +104,23 @@ func (s *UserService) DeleteUser(ctx context.Context, req *userPB.DeleteUserRequ
 	message := fmt.Sprintf("User deleted successfully with username: %s", req.Username)
 	return &userPB.DeleteUserResponse{
 		Message: message,
+	}, nil
+}
+
+func (s *UserService) GetUserIdWithUsername(ctx context.Context, req *userPB.GetUserIdWithUsernameRequest) (*userPB.GetUserIdWithUsernameResponse, error) {
+	log.InfoLogger.Printf("Getting user ID for username: %s", req.Username)
+
+	// Реализация получения ID пользователя по имени
+	var id int64
+	err := s.repo.DB.QueryRowContext(ctx, "SELECT id FROM users WHERE username = ?", req.Username).Scan(&id)
+	if err != nil {
+		log.ErrorLogger.Printf("Failed to get user ID: %v", err)
+		return nil, err
+	}
+
+	log.InfoLogger.Printf("User ID retrieved successfully for username: %s", req.Username)
+
+	return &userPB.GetUserIdWithUsernameResponse{
+		Id: id,
 	}, nil
 }
