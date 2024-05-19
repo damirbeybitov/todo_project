@@ -2,46 +2,40 @@ package user
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 
 	"github.com/damirbeybitov/todo_project/internal/log"
+	"github.com/damirbeybitov/todo_project/internal/user/repository"
 	userPB "github.com/damirbeybitov/todo_project/proto/user"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserService struct{
-	db *sql.DB
+	repo *repository.Repository
 	userPB.UnimplementedUserServiceServer
 }
 
-func NewUserService(db *sql.DB) userPB.UserServiceServer {
-	return &UserService{db: db}
+func NewUserService(repo *repository.Repository) userPB.UserServiceServer {
+	return &UserService{repo: repo}
+}
+
+func init() {
+
 }
 
 func (s *UserService) RegisterUser(ctx context.Context, req *userPB.RegisterUserRequest) (*userPB.RegisterUserResponse, error) {
 	log.InfoLogger.Printf("Registering user with username: %s, email: %s", req.Username, req.Email)
 
 	// Реализация регистрации пользователя
-	tx, err := s.db.BeginTx(ctx, nil)
+	tx, err := s.repo.DB.BeginTx(ctx, nil)
 	if err != nil {
 		log.ErrorLogger.Printf("Failed to start transaction: %v", err)
 		return nil, err
 	}
 
 	// Check if the user already exists
-	var count int
-	err = tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM users WHERE username = ? OR email = ?", req.Username, req.Email).Scan(&count)
-	if err != nil {
-		tx.Rollback()
-		log.ErrorLogger.Printf("Failed to check user existence: %v", err)
+	if err := s.repo.CheckUserInDB(tx, req.Username, req.Email); err != nil {
 		return nil, err
-	}
-
-	if count > 0 {
-		tx.Rollback()
-		log.ErrorLogger.Printf("Username or email already exists")
-		return nil, fmt.Errorf("username or email already exists")
 	}
 
 	// Hash password
@@ -55,18 +49,11 @@ func (s *UserService) RegisterUser(ctx context.Context, req *userPB.RegisterUser
 	hashedPasswordStr := string(hashedPassword)
 	
 	// Insert the new user
-	result, err := tx.ExecContext(ctx, "INSERT INTO users (username, email, password) VALUES (?, ?, ?)", req.Username, req.Email, hashedPasswordStr)
+	id, err := s.repo.AddUserToDB(tx, req.Username, req.Email, hashedPasswordStr)
 	if err != nil {
-		tx.Rollback()
 		log.ErrorLogger.Printf("Failed to insert user: %v", err)
 		return nil, err
-	}
-
-	id, err := result.LastInsertId()
-	if err != nil {
-		tx.Rollback()
-		log.ErrorLogger.Printf("Failed to get last insert ID: %v", err)
-		return nil, err
+	
 	}
 
 	err = tx.Commit()
@@ -75,7 +62,7 @@ func (s *UserService) RegisterUser(ctx context.Context, req *userPB.RegisterUser
 		return nil, err
 	}
 
-	log.InfoLogger.Printf("User registered successfully with ID: %d", id)
+	log.InfoLogger.Printf("User %s registered successfully with ID: %d", req.Username, id)
 
 	return &userPB.RegisterUserResponse{
 		Id: fmt.Sprintf("%d", id),
@@ -87,11 +74,12 @@ func (s *UserService) GetUserProfile(ctx context.Context, req *userPB.GetUserPro
 
 	// Реализация получения профиля пользователя
 	var username, email string
-	err := s.db.QueryRowContext(ctx, "SELECT username, email FROM users WHERE id = ?", req.Id).Scan(&username, &email)
+	err := s.repo.DB.QueryRowContext(ctx, "SELECT username, email FROM users WHERE id = ?", req.Id).Scan(&username, &email)
 	if err != nil {
 		log.ErrorLogger.Printf("Failed to get user profile: %v", err)
 		return nil, err
 	}
+
 	log.InfoLogger.Printf("User profile retrieved successfully for user ID: %s", req.Id)
 
 	return &userPB.GetUserProfileResponse{
@@ -107,35 +95,13 @@ func (s *UserService) DeleteUser(ctx context.Context, req *userPB.DeleteUserRequ
 	log.InfoLogger.Printf("Deleting user with ID: %s", req.Username)
 
 	// Check if the provided password matches the username
-	var storedPassword string
-	err := s.db.QueryRowContext(ctx, "SELECT password FROM users WHERE username = ?", req.Username).Scan(&storedPassword)
-	if err != nil {
-		log.ErrorLogger.Printf("Failed to retrieve stored password: %v", err)
+	if err := s.repo.CheckPassword(req.Username, req.Password); err != nil {
 		return nil, err
-	}
-
-	err = bcrypt.CompareHashAndPassword([]byte(storedPassword), []byte(req.Password))
-	if err != nil {
-		log.ErrorLogger.Printf("Invalid password for user: %s", req.Username)
-		return nil, fmt.Errorf("invalid password")
 	}
 
 	// Реализация удаления пользователя
-	result, err := s.db.ExecContext(ctx, "DELETE FROM users WHERE username = ?", req.Username)
-	if err != nil {
-		log.ErrorLogger.Printf("Failed to delete user: %v", err)
+	if err := s.repo.DeleteuserFromDB(req.Username); err != nil {
 		return nil, err
-	}
-
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		log.ErrorLogger.Printf("Failed to get rows affected: %v", err)
-		return nil, err
-	}
-
-	if rowsAffected == 0 {
-		log.ErrorLogger.Printf("User not found")
-		return nil, fmt.Errorf("user not found")
 	}
 
 	log.InfoLogger.Printf("User deleted successfully with username: %s", req.Username)

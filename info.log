@@ -23,3 +23,8 @@ INFO: 2024/05/13 17:20:31 C:/yarlyki/coding/go/todo_project/cmd/auth/main.go:30:
 INFO: 2024/05/13 17:21:34 C:/yarlyki/coding/go/todo_project/cmd/task/main.go:39: User service is running on port 50051
 INFO: 2024/05/13 17:23:14 C:/yarlyki/coding/go/todo_project/internal/user/service.go:75: Getting user profile for user ID: 1
 INFO: 2024/05/13 17:23:14 C:/yarlyki/coding/go/todo_project/internal/user/service.go:84: User profile retrieved successfully for user ID: 1
+INFO: 2024/05/13 20:28:27 C:/yarlyki/coding/go/todo_project/cmd/user/main.go:30: User service is running on port 50051
+INFO: 2024/05/13 20:28:35 C:/yarlyki/coding/go/todo_project/internal/user/service.go:23: Registering user with username: damir, email: damir@example.com
+INFO: 2024/05/13 20:28:36 C:/yarlyki/coding/go/todo_project/internal/user/service.go:78: User registered successfully with ID: 2
+INFO: 2024/05/13 20:30:07 C:/yarlyki/coding/go/todo_project/internal/user/service.go:107: Deleting user with ID: damir
+INFO: 2024/05/13 20:30:07 C:/yarlyki/coding/go/todo_project/internal/user/service.go:141: User deleted successfully with username: damir

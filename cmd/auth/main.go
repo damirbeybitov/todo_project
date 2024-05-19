@@ -4,7 +4,9 @@ import (
 	"database/sql"
 	"net"
 
-	"github.com/damirbeybitov/todo_project/internal/auth"
+	"github.com/damirbeybitov/todo_project/internal/auth/repository"
+	auth "github.com/damirbeybitov/todo_project/internal/auth/service"
+	"github.com/damirbeybitov/todo_project/internal/config"
 	"github.com/damirbeybitov/todo_project/internal/log"
 	pb "github.com/damirbeybitov/todo_project/proto/auth"
 	_ "github.com/go-sql-driver/mysql"
@@ -18,13 +20,20 @@ func main() {
 		log.ErrorLogger.Fatalf("failed to listen: %v", err)
 	}
 
-	db, err := sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/to_do")
+	myConfig, err := config.NewConfig("config.json")
+	if err != nil {
+		log.ErrorLogger.Fatalf("failed to read config: %v", err)
+	}
+
+	db, err := sql.Open("mysql", myConfig.SqlConnection)
 	if err != nil {
 		log.ErrorLogger.Fatalf("failed to connect to database: %v", err)
 	}
 
+	repo := repository.NewRepository(db)
+
 	server := grpc.NewServer()
-	authService := auth.NewAuthService(db) // Создание экземпляра сервиса пользователей
+	authService := auth.NewAuthService(repo) // Создание экземпляра сервиса пользователей
 	pb.RegisterAuthServiceServer(server, authService)
 
 	log.InfoLogger.Println("Authentication service is running on port 50051")
