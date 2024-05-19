@@ -5,6 +5,7 @@ import (
 
 	"github.com/damirbeybitov/todo_project/internal/auth/repository"
 	"github.com/damirbeybitov/todo_project/internal/log"
+	token "github.com/damirbeybitov/todo_project/internal/token"
 	authPB "github.com/damirbeybitov/todo_project/proto/auth"
 )
 
@@ -45,10 +46,13 @@ func (s *AuthService) RefreshToken(ctx context.Context, req *authPB.RefreshToken
 	log.InfoLogger.Println("Refreshing token")
 
 	// Реализация обновления токена
-	
+	accessToken, err := token.RefreshToken(req.RefreshToken)
+	if err != nil {
+		return nil, err
+	}
 
 	// В данном примере просто возвращается фиктивный access token.
 	return &authPB.RefreshTokenResponse{
-		AccessToken: "fake_access_token",
+		AccessToken: accessToken,
 	}, nil
 }
