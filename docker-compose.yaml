@@ -11,14 +11,14 @@ services:
       context: .
       dockerfile: cmd/auth/Dockerfile
     ports:
-      - "50052:8080"
+      - "50052:50052"
 
   task:
     build:
       context: .
       dockerfile: cmd/task/Dockerfile
     ports:
-      - "50053:8080"
+      - "50053:50053"
 
   api:
     build:
