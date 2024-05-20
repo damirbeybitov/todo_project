@@ -9,7 +9,10 @@ import (
 	"github.com/damirbeybitov/todo_project/internal/log"
 	"github.com/damirbeybitov/todo_project/internal/models"
 	"github.com/damirbeybitov/todo_project/internal/repository"
+	_ "github.com/gin-gonic/gin"
 	"github.com/gorilla/mux"
+	_ "github.com/swaggo/files"
+	_ "github.com/swaggo/gin-swagger"
 
 	pbAuth "github.com/damirbeybitov/todo_project/proto/auth"
 	pbTask "github.com/damirbeybitov/todo_project/proto/task"
@@ -24,6 +27,17 @@ func NewHandler(repo *repository.Repository) *Handler {
 	return &Handler{repo: repo}
 }
 
+// @Summary Register user
+// @Tags auth
+// @Description register a new user
+// @ID register-user
+// @Accept json
+// @Produce json
+// @Param body body models.RegisterRequest true "User registration data"
+// @Success 200 {object} models.RegisterResponse
+// @Failure 400 {string} string "Bad request"
+// @Failure 500 {string} string "Internal server error"
+// @Router /auth/register [post]
 func (h *Handler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var user models.RegisterRequest
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
@@ -64,6 +78,17 @@ func (h *Handler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	log.InfoLogger.Print("Register endpoint done successfully")
 }
 
+// @Summary User login
+// @Tags auth
+// @Description login for existing user
+// @ID login-user
+// @Accept json
+// @Produce json
+// @Param body body models.LoginRequest true "User login data"
+// @Success 200 {object} models.LoginResponse
+// @Failure 400 {string} string "Bad request"
+// @Failure 500 {string} string "Internal server error"
+// @Router /auth/login [post]
 func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var user models.LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
@@ -102,6 +127,17 @@ func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	log.InfoLogger.Print("Login endpoint done successfully")
 }
 
+// @Summary Refresh user token
+// @Tags auth
+// @Description refresh user access token
+// @ID refresh-token
+// @Accept json
+// @Produce json
+// @Param body body models.RefreshTokenRequest true "User refresh token data"
+// @Success 200 {object} models.RefreshTokenResponse
+// @Failure 400 {string} string "Bad request"
+// @Failure 500 {string} string "Internal server error"
+// @Router /auth/refresh [post]
 func (h *Handler) RefreshTokenHandler(w http.ResponseWriter, r *http.Request) {
 	var refreshToken models.RefreshTokenRequest
 	if err := json.NewDecoder(r.Body).Decode(&refreshToken); err != nil {
@@ -137,6 +173,17 @@ func (h *Handler) RefreshTokenHandler(w http.ResponseWriter, r *http.Request) {
 	log.InfoLogger.Print("Refresh token endpoint done successfully")
 }
 
+// @Summary Get user profile
+// @Tags user
+// @Description get user profile by token
+// @ID get-user-profile
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} models.GetUserProfileResponse
+// @Failure 400 {string} string "Bad request"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 500 {string} string "Internal server error"
+// @Router /user/profile [get]
 func (h *Handler) GetUserProfileHandler(w http.ResponseWriter, r *http.Request) {
 	userToken := r.Header.Get("Authorization")
 	if userToken == "" {
@@ -177,6 +224,19 @@ func (h *Handler) GetUserProfileHandler(w http.ResponseWriter, r *http.Request) 
 
 }
 
+// @Summary Delete user
+// @Tags user
+// @Description delete user by username and password
+// @ID delete-user
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param body body models.DeleteUserRequest true "User deletion data"
+// @Success 200 {object} models.DeleteUserResponse
+// @Failure 400 {string} string "Bad request"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 500 {string} string "Internal server error"
+// @Router /user/delete [post]
 func (h *Handler) DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	var user models.DeleteUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
@@ -228,7 +288,19 @@ func (h *Handler) DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	log.InfoLogger.Print("Delete user endpoint done successfully")
 }
 
-// CreateTaskHandler handles creating a new task
+// @Summary Create task
+// @Tags task
+// @Description create a new task
+// @ID create-task
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param body body models.CreateTaskRequest true "Task creation data"
+// @Success 200 {object} models.CreateTaskResponse
+// @Failure 400 {string} string "Bad request"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 500 {string} string "Internal server error"
+// @Router /task/create [post]
 func (h *Handler) CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	var req models.CreateTaskRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -278,7 +350,17 @@ func (h *Handler) CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	log.InfoLogger.Print("Create task endpoint done successfully")
 }
 
-// GetTasksHandler handles retrieving all tasks
+// @Summary Get tasks
+// @Tags task
+// @Description retrieve all tasks
+// @ID get-tasks
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Success 200 {object} models.GetTasksResponse
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 500 {string} string "Internal server error"
+// @Router /task/all [get]
 func (h *Handler) GetTasksHandler(w http.ResponseWriter, r *http.Request) {
 	// Implement logic to retrieve all tasks
 	// Placeholder implementation
@@ -332,7 +414,20 @@ func (h *Handler) GetTasksHandler(w http.ResponseWriter, r *http.Request) {
 	log.InfoLogger.Print("Get tasks endpoint done successfully")
 }
 
-// GetTaskHandler handles retrieving a task by ID
+// @Summary Get task by ID
+// @Tags task
+// @Description retrieve a task by its ID
+// @ID get-task-by-id
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param id path int true "Task ID"
+// @Success 200 {object} models.Task
+// @Failure 400 {string} string "Bad request"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 404 {string} string "Not found"
+// @Failure 500 {string} string "Internal server error"
+// @Router /task/{id} [get]
 func (h *Handler) GetTaskHandler(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	if id == "" {
@@ -369,7 +464,20 @@ func (h *Handler) GetTaskHandler(w http.ResponseWriter, r *http.Request) {
 	log.InfoLogger.Print("Get task endpoint done successfully")
 }
 
-// UpdateTaskHandler handles updating a task
+// @Summary Update task
+// @Tags task
+// @Description update a task
+// @ID update-task
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param body body models.UpdateTaskRequest true "Task update data"
+// @Success 200 {object} models.UpdateTaskResponse
+// @Failure 400 {string} string "Bad request"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 404 {string} string "Not found"
+// @Failure 500 {string} string "Internal server error"
+// @Router /task/update [post]
 func (h *Handler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	var req models.UpdateTaskRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -441,7 +549,20 @@ func (h *Handler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	log.InfoLogger.Print("Update task endpoint done successfully")
 }
 
-// DeleteTaskHandler handles deleting a task
+// @Summary Delete task
+// @Tags task
+// @Description delete a task by ID
+// @ID delete-task
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param id path int true "Task ID"
+// @Success 200 {object} models.DeleteTaskResponse
+// @Failure 400 {string} string "Bad request"
+// @Failure 401 {string} string "Unauthorized"
+// @Failure 404 {string} string "Not found"
+// @Failure 500 {string} string "Internal server error"
+// @Router /task/{id} [delete]
 func (h *Handler) DeleteTaskHandler(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	if id == "" {

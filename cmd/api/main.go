@@ -3,6 +3,10 @@ package main
 import (
 	"log"
 
+	_ "github.com/gin-gonic/gin"
+	_ "github.com/swaggo/files"
+	_ "github.com/swaggo/gin-swagger"
+
 	"github.com/damirbeybitov/todo_project/internal/handlers"
 	"github.com/damirbeybitov/todo_project/internal/models"
 	"github.com/damirbeybitov/todo_project/internal/repository"
@@ -12,6 +16,17 @@ import (
 	pbUser "github.com/damirbeybitov/todo_project/proto/user"
 	"google.golang.org/grpc"
 )
+
+// @title Todo Project API
+// @version 1.0
+// @description API Server for Todo Project
+
+// @host localhost:8000
+// @BasePath /
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 
 func main() {
 	// Подключение к серверу микросервиса пользователей
