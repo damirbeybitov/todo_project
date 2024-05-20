@@ -1,0 +1,32 @@
+services:
+  user:
+    build:
+      context: .
+      dockerfile: cmd/user/Dockerfile
+    ports:
+      - "50051:8080"
+
+  auth:
+    build:
+      context: .
+      dockerfile: cmd/auth/Dockerfile
+    ports:
+      - "50052:8080"
+
+  task:
+    build:
+      context: .
+      dockerfile: cmd/task/Dockerfile
+    ports:
+      - "50053:8080"
+
+  api:
+    build:
+      context: .
+      dockerfile: cmd/api/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user
+      - auth
+      - task

@@ -12,7 +12,7 @@ import (
 
 func setupTestDB(t *testing.T) *sql.DB {
 	// Connect to the test database
-	db, err := sql.Open("mysql", "root:@tcp(localhost:3306)/to_do")
+	db, err := sql.Open("mysql", "root:root@tcp(localhost:3306)/to_do")
 	if err != nil {
 		t.Fatalf("Error connecting to MySQL: %v", err)
 	}
