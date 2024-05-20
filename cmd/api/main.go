@@ -3,10 +3,6 @@ package main
 import (
 	"log"
 
-	_ "github.com/gin-gonic/gin"
-	_ "github.com/swaggo/files"
-	_ "github.com/swaggo/gin-swagger"
-
 	"github.com/damirbeybitov/todo_project/internal/handlers"
 	"github.com/damirbeybitov/todo_project/internal/models"
 	"github.com/damirbeybitov/todo_project/internal/repository"

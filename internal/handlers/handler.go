@@ -9,10 +9,7 @@ import (
 	"github.com/damirbeybitov/todo_project/internal/log"
 	"github.com/damirbeybitov/todo_project/internal/models"
 	"github.com/damirbeybitov/todo_project/internal/repository"
-	_ "github.com/gin-gonic/gin"
 	"github.com/gorilla/mux"
-	_ "github.com/swaggo/files"
-	_ "github.com/swaggo/gin-swagger"
 
 	pbAuth "github.com/damirbeybitov/todo_project/proto/auth"
 	pbTask "github.com/damirbeybitov/todo_project/proto/task"
