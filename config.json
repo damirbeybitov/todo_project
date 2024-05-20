@@ -1,3 +1,3 @@
 {
-    "SqlConnection": "root:root@tcp(localhost:3306)/to_do"
+    "SqlConnection": "root:@tcp(localhost:3306)/to_do"
 }

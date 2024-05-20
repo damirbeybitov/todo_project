@@ -3,6 +3,10 @@ package main
 import (
 	"log"
 
+	_ "github.com/gin-gonic/gin"
+	_ "github.com/swaggo/files"
+	_ "github.com/swaggo/gin-swagger"
+
 	"github.com/damirbeybitov/todo_project/internal/handlers"
 	"github.com/damirbeybitov/todo_project/internal/models"
 	"github.com/damirbeybitov/todo_project/internal/repository"
@@ -12,6 +16,17 @@ import (
 	pbUser "github.com/damirbeybitov/todo_project/proto/user"
 	"google.golang.org/grpc"
 )
+
+// @title Todo Project API
+// @version 1.0
+// @description API Server for Todo Project
+
+// @host localhost:8000
+// @BasePath /
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 
 func main() {
 	// Подключение к серверу микросервиса пользователей
@@ -52,34 +67,4 @@ func main() {
 
 	service := service.NewService(handler)
 	service.LaunchServer()
-
-	// Вызов метода RegisterUser
-	// registerResponse, err := microServiceClients.UserClient.RegisterUser(context.Background(), &pbUser.RegisterUserRequest{
-	// 	Username: "damir",
-	// 	Email:    "damir@example.com",
-	// 	Password: "password",
-	// })
-	// if err != nil {
-	// 	log.Fatalf("could not register user: %v", err)
-	// }
-	// log.Printf("Registered user with ID: %s", registerResponse.Id)
-
-	// Вызов метода GetUserProfile
-	// getUserProfileResponse, err := microserviceClients.UserClient.GetUserProfile(context.Background(), &pbUser.GetUserProfileRequest{
-	// 	Id: "1", // Предполагается, что это ID только что зарегистрированного пользователя
-	// })
-	// if err != nil {
-	// 	log.Fatalf("could not get user profile: %v", err)
-	// }
-	// log.Printf("Got user profile: %+v", getUserProfileResponse.User)
-
-	// Вызов метода DeleteUser
-	// deleteUserResponse, err := microserviceClients.UserClient.DeleteUser(context.Background(), &pbUser.DeleteUserRequest{
-	// 	Username: "damir",
-	// 	Password: "password",
-	// })
-	// if err != nil {
-	// 	log.Fatalf("could not delete user: %v", err)
-	// }
-	// log.Printf(deleteUserResponse.Message)
 }
